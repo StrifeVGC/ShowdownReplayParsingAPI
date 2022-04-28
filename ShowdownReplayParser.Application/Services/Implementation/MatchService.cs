@@ -18,9 +18,8 @@ namespace ShowdownReplayParser.Application.Services.Implementation
             var splitP2Team = Utils.getBetween(request.Log, Constants.PLAYERTWOPOKEMON, Constants.TEAMPREVIEW);
 
             //remove \n
-            string replaceSlashN = "\n";
-            var tempP1 = splitP1Team.Split(replaceSlashN);
-            var tempP2 = splitP2Team.Split(replaceSlashN);
+            var tempP1 = splitP1Team.Split(Constants.SLASHN);
+            var tempP2 = splitP2Team.Split(Constants.SLASHN);
 
             var player1 = new Player { PlayerName = request.P1 };
             var player2 = new Player { PlayerName = request.P2 };
@@ -32,12 +31,16 @@ namespace ShowdownReplayParser.Application.Services.Implementation
             //find the winner in the log
             var findWinner = Utils.getBetween(request.Log, Constants.WINFIELD, Constants.SLASHN);
 
-            return new Match
+            var parsedMatch = new Match
             {
                 PlayerOne = player1,
                 PlayerTwo = player2,
                 Winner = findWinner
             };
+
+            parsedMatch = ParseBattleInfo(request.Log, parsedMatch);
+
+            return parsedMatch;
         }
 
 
@@ -54,6 +57,33 @@ namespace ShowdownReplayParser.Application.Services.Implementation
             }
 
             return team;
+        }
+
+        public Match ParseBattleInfo(string log, Match match)
+        {
+            var leadString = Utils.getBetween(log, Constants.STARTFIELD, Constants.ABILITYFIELD);
+            var splitLeadString = leadString.Split(Constants.SLASHN);
+            var recomposedString = string.Concat(splitLeadString);
+            var pokemonInOrder = recomposedString.Split(Constants.SWITCHFIELD);
+
+            foreach(string s in pokemonInOrder)
+            {
+                if(!string.IsNullOrEmpty(s))
+                {
+                    var noSpaces = s.Split(" ");
+                    var pokemonName = noSpaces[1].Split("|")[1].Replace(",", "");
+
+                    if (noSpaces[0] == Constants.PLAYERONEFIRSTPOKEMON || noSpaces[0] == Constants.PLAYERONESECONDPOKEMON)
+                        match.PlayerOneLead.Add(new Pokemon { Name = pokemonName });
+
+                    if (noSpaces[0] == Constants.PLAYERTWOFIRSTPOKEMON || noSpaces[0] == Constants.PLAYERTWOSECONDPOKEMON)
+                        match.PlayerTwoLead.Add(new Pokemon { Name = pokemonName });
+                }
+                
+
+            }
+
+            return match;
         }
     }
 }
