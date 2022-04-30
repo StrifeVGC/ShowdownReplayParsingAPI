@@ -1,18 +1,19 @@
 ﻿using ShowdownReplayParser.Application.Common;
 using ShowdownReplayParser.Application.Models;
 using ShowdownReplayParser.Application.Services.Contract;
+using System.Text.RegularExpressions;
 
 namespace ShowdownReplayParser.Application.Services.Implementation
 {
-    public class MatchService : IMatchService
+    public class BattleService : IBattleService
     {
-        private readonly ILogger<MatchService> _logger;
-        public MatchService(ILogger<MatchService> logger)
+        private readonly ILogger<BattleService> _logger;
+        public BattleService(ILogger<BattleService> logger)
         {
             _logger = logger;
         }
 
-        public Match ParseMatchInformation(MatchReplayRequest request)
+        public Battle ParseBattleInformation(BattleReplayRequest request)
         {
             try
             {
@@ -34,16 +35,16 @@ namespace ShowdownReplayParser.Application.Services.Implementation
                 //find the winner in the log
                 var findWinner = Utils.GetBetween(request.Log, Constants.WINFIELD, Constants.SLASHN);
 
-                var parsedMatch = new Match
+                var parsedBattle = new Battle
                 {
                     PlayerOne = player1,
                     PlayerTwo = player2,
                     Winner = findWinner
                 };
 
-                parsedMatch = ParseBattleInfo(request.Log, parsedMatch);
+                parsedBattle = ParseBattleInfo(request.Log, parsedBattle);
 
-                return parsedMatch;
+                return parsedBattle;
             }
             catch(Exception e)
             {
@@ -78,7 +79,7 @@ namespace ShowdownReplayParser.Application.Services.Implementation
             return team;
         }
 
-        private Match ParseBattleInfo(string log, Match match)
+        private Battle ParseBattleInfo(string log, Battle battle)
         {
             //Parse leads
             var leadString = Utils.GetBetween(log, Constants.STARTFIELD, Constants.ABILITYFIELD);
@@ -94,21 +95,30 @@ namespace ShowdownReplayParser.Application.Services.Implementation
                     var pokemonName = noSpaces[1].Split("|")[1].Replace(",", "");
 
                     if (BelongsToFirstPlayer(noSpaces[0]))
-                        match.PlayerOneLead.Add(new Pokemon { Name = pokemonName });
+                        battle.PlayerOneLead.Add(new Pokemon { Name = pokemonName });
 
                     if (BelongsToSecondPlayer(noSpaces[0]))
-                        match.PlayerTwoLead.Add(new Pokemon { Name = pokemonName });
+                        battle.PlayerTwoLead.Add(new Pokemon { Name = pokemonName });
                 }
                 
 
             }
 
+            //check for turn 1 dynamaxes
+            //TODO: Implement nickname checking
+            CheckTurnOneDynamax(log, battle);
+
             //parse moves
-            var matchString = Utils.GetBetween(log, Constants.MOVEFIELD, Constants.WINFIELD);
-            var movesString = matchString.Split(Constants.MOVEFIELD);
+            var BattleString = Utils.GetBetween(log, Constants.MOVEFIELD, Constants.WINFIELD);
+            var tempBattleString = BattleString.Split(Constants.SLASHN);
+            var recomposedBattle = string.Concat(tempBattleString);
+            var movesString = recomposedBattle.Split(Constants.MOVEFIELD);
+
+            
 
             foreach(string s in movesString)
             {
+
                 var tempMoves = s.Split("|");
                 var pokemonName = tempMoves[0].Split(" ")[1];
                 var moveName = tempMoves[1];
@@ -120,19 +130,19 @@ namespace ShowdownReplayParser.Application.Services.Implementation
 
                     if(BelongsToFirstPlayer(dynamaxInfo.Split(" ")[0]))
                     {
-                        var pokemon = match.PlayerOne.Team.FirstOrDefault(x => x.Name == dynamaxInfo.Split(" ")[1]);
+                        var pokemon = battle.PlayerOne.Team.FirstOrDefault(x => x.Name == dynamaxInfo.Split(" ")[1]);
                         if(pokemon != null)
                         {
-                            match = SetDynamaxPokemon(match, pokemon);
+                            SetDynamaxPokemon(pokemon);
                         }             
                     }
 
                     if (BelongsToSecondPlayer(dynamaxInfo.Split(" ")[0]))
                     {
-                        var pokemon = match.PlayerTwo.Team.FirstOrDefault(x => x.Name == dynamaxInfo.Split(" ")[1]);
+                        var pokemon = battle.PlayerTwo.Team.FirstOrDefault(x => x.Name == dynamaxInfo.Split(" ")[1]);
                         if (pokemon != null)
                         {
-                            match = SetDynamaxPokemon(match, pokemon);
+                            SetDynamaxPokemon(pokemon);
                         }
                     }
 
@@ -140,24 +150,24 @@ namespace ShowdownReplayParser.Application.Services.Implementation
 
                 if (BelongsToFirstPlayer(tempMoves[0].Split(" ")[0]))
                 {
-                    var pokemon = match.PlayerOne.Team.FirstOrDefault(x => x.Name == pokemonName);
+                    var pokemon = battle.PlayerOne.Team.FirstOrDefault(x => x.Name == pokemonName);
                     if(pokemon != null)
                     {
-                        match = AddMoveToPokemon(match, pokemon, moveName);
+                        AddMoveToPokemon(pokemon, moveName);
                     }              
                 }
 
                 if (BelongsToSecondPlayer(tempMoves[0].Split(" ")[0]))
                 {
-                    var pokemon = match.PlayerTwo.Team.FirstOrDefault(x => x.Name == pokemonName);
+                    var pokemon = battle.PlayerTwo.Team.FirstOrDefault(x => x.Name == pokemonName);
                     if (pokemon != null)
                     {
-                        match = AddMoveToPokemon(match, pokemon, moveName);
+                        AddMoveToPokemon(pokemon, moveName);
                     }
                 }
             }
 
-            return match;
+            return battle;
         }
 
         private bool BelongsToFirstPlayer(string playerConstant)
@@ -170,17 +180,17 @@ namespace ShowdownReplayParser.Application.Services.Implementation
             return (playerConstant == Constants.PLAYERTWOFIRSTPOKEMON || playerConstant == Constants.PLAYERTWOSECONDPOKEMON);
         }
 
-        private Match SetDynamaxPokemon(Match match, Pokemon pokemon)
+        private void SetDynamaxPokemon(Pokemon pokemon)
         {
             
             if (pokemon != null)
             {
                 pokemon.HasDynamaxed = true;
+                
             }
-            return match;
         }
 
-        private Match AddMoveToPokemon(Match match, Pokemon pokemon, string moveName)
+        private void AddMoveToPokemon(Pokemon pokemon, string moveName)
         {
             if (pokemon != null && !pokemon.Moves.Contains(moveName) && !moveName.StartsWith(Constants.MAX_PREFIX))
             {
@@ -189,11 +199,67 @@ namespace ShowdownReplayParser.Application.Services.Implementation
 
             else if (pokemon != null && !pokemon.MaxMoves.Contains(moveName) && moveName.StartsWith(Constants.MAX_PREFIX))
             {
-                    pokemon.MaxMoves.Add(moveName);
+                pokemon.MaxMoves.Add(moveName);
+            }
+        }
+
+        private void CheckTurnOneDynamax(string log, Battle battle)
+        { 
+
+            var firstTurnDynamaxesString = Utils.GetBetween(log, Constants.MINUSSTART, Constants.MOVEFIELD);
+            var startofTurnString = string.Concat(firstTurnDynamaxesString.Split(Constants.SLASHN));
+
+            //two pokemon dynamaxed turn one
+            if (Regex.Matches(startofTurnString, Constants.DYNAMAXFIELD).Count == 2)
+            {
+                var splitDynamaxes = firstTurnDynamaxesString.Split(Constants.MINUSSTART);
+
+                if(splitDynamaxes!= null && splitDynamaxes.Any())
+                {
+                    foreach(string s in splitDynamaxes)
+                    {
+                        SetTurnOneDynamax(battle, s);
+                    }
+                }
             }
 
-            return match;
+            //one pokemon dynamaxed turn one
+            else if(Regex.Matches(startofTurnString, Constants.DYNAMAXFIELD).Count == 1)
+            {
+                SetTurnOneDynamax(battle, firstTurnDynamaxesString);
+            }
         }
+
+        private void SetTurnOneDynamax(Battle battle, string toParse)
+        {
+            var splitMaxString = toParse.Split("|");
+            bool isGmax = toParse.Contains(Constants.GMAX);
+
+            string owner = splitMaxString[0].Split(" ")[0];
+            string pokemonName = splitMaxString[0].Split(" ")[1];
+            if (BelongsToFirstPlayer(owner))
+            {
+                var pokemon = battle.PlayerOne.Team.FirstOrDefault(x => x.Name == pokemonName);
+                if (pokemon != null)
+                {
+                    pokemon.HasDynamaxed = true;
+                    pokemon.IsGmax = isGmax;
+                }
+
+            }
+
+            if (BelongsToSecondPlayer(owner))
+            {
+                var pokemon = battle.PlayerTwo.Team.FirstOrDefault(x => x.Name == pokemonName);
+                if (pokemon != null)
+                {
+                    pokemon.HasDynamaxed = true;
+                    pokemon.IsGmax = isGmax;
+                }
+
+            }
+        }
+
         #endregion
     }
 }

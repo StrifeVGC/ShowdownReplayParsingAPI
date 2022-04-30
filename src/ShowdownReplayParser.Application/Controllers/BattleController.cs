@@ -7,21 +7,21 @@ using ShowdownReplayParser.Application.Services.Contract;
 namespace ShowdownReplayParser.Application.Controllers
 {
     [ApiController]
-    public class MatchController : Controller
+    public class BattleController : Controller
     {
-        private readonly IMatchService _matchService;
-        public MatchController(IMatchService matchService)
+        private readonly IBattleService _matchService;
+        public BattleController(IBattleService matchService)
         {
             _matchService = matchService;
         }
 
         [HttpPost]
         [Route("/details")]
-        public IActionResult MatchDetails([FromBody] MatchReplayRequest request)
+        public IActionResult MatchDetails([FromBody] BattleReplayRequest request)
         {
             try
             {
-                var result = _matchService.ParseMatchInformation(request);
+                var result = _matchService.ParseBattleInformation(request);
                 return Ok(JsonConvert.SerializeObject(result));
             }
             catch (Exception ex)

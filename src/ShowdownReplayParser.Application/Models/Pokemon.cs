@@ -13,5 +13,6 @@
         public List<string> Moves { get; set; }
         public List<string> MaxMoves { get; set; }
         public bool HasDynamaxed { get; set; }
+        public bool IsGmax { get; set; }
     }
 }

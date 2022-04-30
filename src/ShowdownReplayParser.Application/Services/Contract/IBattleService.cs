@@ -2,8 +2,8 @@
 
 namespace ShowdownReplayParser.Application.Services.Contract
 {
-    public interface IMatchService
+    public interface IBattleService
     {
-        public Match ParseMatchInformation(MatchReplayRequest request);
+        public Battle ParseBattleInformation(BattleReplayRequest request);
     }
 }

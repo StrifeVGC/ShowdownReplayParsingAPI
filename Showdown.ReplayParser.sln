@@ -7,6 +7,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A077DB17-B83
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShowdownReplayParser.Application", "src\ShowdownReplayParser.Application\ShowdownReplayParser.Application.csproj", "{4ED24291-F932-47EE-92C0-BA3D4EF95A68}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{5BF1DA2B-698C-48E2-99AD-8886D93959FF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShowdownReplayParser.Application.Tests", "tests\ShowdownReplayParser.Application.Tests\ShowdownReplayParser.Application.Tests.csproj", "{F176E409-BB02-43F3-ACFD-A1FC475FF528}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,12 +21,17 @@ Global
 		{4ED24291-F932-47EE-92C0-BA3D4EF95A68}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4ED24291-F932-47EE-92C0-BA3D4EF95A68}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4ED24291-F932-47EE-92C0-BA3D4EF95A68}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F176E409-BB02-43F3-ACFD-A1FC475FF528}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F176E409-BB02-43F3-ACFD-A1FC475FF528}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F176E409-BB02-43F3-ACFD-A1FC475FF528}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F176E409-BB02-43F3-ACFD-A1FC475FF528}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{4ED24291-F932-47EE-92C0-BA3D4EF95A68} = {A077DB17-B83C-4961-BDE5-F9C2C37338F8}
+		{F176E409-BB02-43F3-ACFD-A1FC475FF528} = {5BF1DA2B-698C-48E2-99AD-8886D93959FF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9A960737-32B6-485B-B29D-C8A88CE59FD0}
