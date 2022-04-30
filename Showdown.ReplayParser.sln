@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32421.90
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShowdownReplayParser.Application", "ShowdownReplayParser.Application\ShowdownReplayParser.Application.csproj", "{176151E5-A4C0-4B5A-9C75-4F35E33F2A54}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A077DB17-B83C-4961-BDE5-F9C2C37338F8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShowdownReplayParser.Application", "src\ShowdownReplayParser.Application\ShowdownReplayParser.Application.csproj", "{4ED24291-F932-47EE-92C0-BA3D4EF95A68}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,13 +13,16 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{176151E5-A4C0-4B5A-9C75-4F35E33F2A54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{176151E5-A4C0-4B5A-9C75-4F35E33F2A54}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{176151E5-A4C0-4B5A-9C75-4F35E33F2A54}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{176151E5-A4C0-4B5A-9C75-4F35E33F2A54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4ED24291-F932-47EE-92C0-BA3D4EF95A68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4ED24291-F932-47EE-92C0-BA3D4EF95A68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4ED24291-F932-47EE-92C0-BA3D4EF95A68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4ED24291-F932-47EE-92C0-BA3D4EF95A68}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{4ED24291-F932-47EE-92C0-BA3D4EF95A68} = {A077DB17-B83C-4961-BDE5-F9C2C37338F8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9A960737-32B6-485B-B29D-C8A88CE59FD0}
