@@ -7,7 +7,7 @@
             Team = new List<Pokemon>();
         }
 
-        public string PlayerName { get; set; }
-        public List<Pokemon> Team { get; set; }
+        public string? PlayerName { get; set; }
+        public IEnumerable<Pokemon> Team { get; set; }
     }
 }

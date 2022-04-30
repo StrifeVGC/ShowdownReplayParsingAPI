@@ -1,8 +1,8 @@
 ﻿namespace ShowdownReplayParser.Application.Models
 {
-    public class Match
+    public class Battle
     {
-        public Match()
+        public Battle()
         {
             PlayerOneLead = new List<Pokemon>();
             PlayerTwoLead = new List<Pokemon>();

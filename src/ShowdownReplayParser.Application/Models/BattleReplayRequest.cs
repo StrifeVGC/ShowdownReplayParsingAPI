@@ -1,6 +1,6 @@
 ﻿namespace ShowdownReplayParser.Application.Models
 {
-    public class MatchReplayRequest
+    public class BattleReplayRequest
     {
         public string Id { get; set; }
         public string P1 { get; set; }
